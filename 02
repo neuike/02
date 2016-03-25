@@ -1,0 +1,1210 @@
+package theHomework;
+import java.io.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.regex.Pattern;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
+public class theHomework extends JFrame {
+
+	
+
+	private JPanel contentPane;
+
+	static public Room []rooms=new Room[100];
+	static public Student []students=new Student[100];
+	static public int studentNum,roomNum;
+	static public Student []newStudents=new Student[100];
+	static public int newStudentNum;
+	
+	static public int newStuRoomNum;
+	static public Room []newStuRooms=new Room[100];
+	static public Student []newStu=new Student[100];
+
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private JTextField textField_5;
+	private JTextField textField_6;
+	private JTextField textField_7;
+	private JTextField textField_8;
+	private JTextField textField_9;
+	private JTextField textField_10;
+	private JTextField textField_11;
+	private JTextField textField_12;
+	private JTextField textField_13;
+	private JTextField textField_14;
+	private JTextField textField_15;
+	private JTextField textField_16;
+	private JTextField textField_17;
+	
+	
+	public static void main(String[] args) throws FileNotFoundException {
+
+			studentNum=roomNum=0;
+			//打开文件,读取学生信息
+			Scanner in=new Scanner (new File("D:/theHomework/students.txt")); 
+			while (in.hasNext()){
+			//分别读取学号 姓名 性别 宿舍号的信息
+			 String id;String name;String sex;int num;
+			 id=in.next();
+			 name=in.next();
+			 sex=in.next();
+			 num=Integer.parseInt(in.next());
+			//将信息存放在数组里面
+             students[studentNum++]=new Student(id,name,sex,num);
+			}
+		
+			//打开文件,读取宿舍信息
+			Scanner iin=new Scanner (new File("D:/theHomework/rooms.txt"));
+			try{ 
+				while (iin.hasNext()) {
+					//分别读取宿舍号 容量 已经入住人数 男寝还是女寝的信息
+					int num = 0,size,has;
+					String sex;
+					String tmp=iin.next();
+					tmp = tmp.trim();
+					//确保读取的tmp字符串全部为数字构成
+					while(tmp.charAt(0)>'9'||tmp.charAt(0)<'0'){
+						tmp = tmp.substring(1,tmp.length()).trim();
+					}
+					//将tmp转换成整形数据存放在numm里面
+					num=Integer.parseInt(tmp);
+					size=Integer.parseInt(iin.next().trim());
+					has=Integer.parseInt(iin.next().trim());
+					sex=iin.next();	 
+					//将信息存放在数组里面
+					rooms[roomNum++]=new Room(num,size,has,sex);
+				}
+			}catch (NumberFormatException e)
+			{
+				JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR",JOptionPane.INFORMATION_MESSAGE);
+			}
+			in.close();
+			iin.close();
+		 
+		 //构建面板
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {			
+						theHomework frame = new theHomework();
+						frame.setVisible(true);
+					
+					
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		
+		}
+
+	//将当前的各项信息,保存到文件中
+	public void save()
+	{
+		//打开文件,将room的各项信息存进去
+		  File  file= new File("D:/theHomework/rooms.txt");
+		  FileWriter fw=null;
+		  BufferedWriter writer=null;
+		  
+		  try{	 
+			  fw=new FileWriter(file);
+			  writer=new BufferedWriter(fw);		
+			  for(int i=0;i<roomNum;i++)
+			  {	//分别写入宿舍号 容量 已经入住人数 男寝还是女寝的信息
+				  writer.write(rooms[i].num+" "+rooms[i].size+" "+rooms[i].has+" "+rooms[i].sex);
+				  writer.newLine();
+			  }
+		  }catch (FileNotFoundException e){
+			  e.printStackTrace();
+			  JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR",JOptionPane.INFORMATION_MESSAGE);
+		  }catch (IOException e){
+			  JOptionPane.showMessageDialog(null,"IOException","ERROR",JOptionPane.INFORMATION_MESSAGE);
+			  e.printStackTrace();
+		  }
+		  
+		  
+		  //打开文件,将student的各项信息存进去
+		  File nfile=new File("d:/theHomework/students.txt");
+		  FileWriter nfw=null;
+		  BufferedWriter nwriter=null;
+           try{ 
+        	   	
+        	   nfw=new FileWriter(nfile);
+        	   nwriter=new BufferedWriter(nfw);
+        	   for(int i=0;i<studentNum;i++)
+        	   {
+        		   ////分别写入学号 姓名 性别 宿舍号的信息
+        		   nwriter.write(students[i].id+" "+students[i].name+" "+students[i].sex+" "+students[i].num);
+        		   nwriter.newLine();
+        	   }
+           }catch (FileNotFoundException e){
+ 			  e.printStackTrace();
+ 		  }catch (IOException e){
+ 			  e.printStackTrace();
+ 		  }finally{
+ 			  try{
+ 			  nwriter.close();
+ 			  nfw.close();
+ 			  }catch (FileNotFoundException e){
+ 	 			  e.printStackTrace();
+ 	 		  }catch (IOException e){
+ 				 e.printStackTrace();
+ 			  }
+ 		  }
+           try{
+	 			  writer.close();
+	 			  fw.close();
+	 			  }catch (FileNotFoundException e){
+	 	 			  e.printStackTrace();
+	 	 		  }catch (IOException e){
+	 				 e.printStackTrace();
+	 			  }
+ 	}
+	
+	//显示room的各项信息
+	public void showRooms(JTextArea  a)
+	{
+		String tmp="";
+		
+		for(int i=0;i<roomNum;i++)
+		{
+			tmp+=String.format("%-20s%-20s%-20s%-20s\n",rooms[i].num,rooms[i].size,rooms[i].has,rooms[i].sex);
+			
+			
+		}
+		a.setText(tmp);
+	}
+	
+	//显示学生的各项信息
+	public void showStudents(JTextArea  a)
+	{
+		String tmp="";
+	
+		for(int i=0;i<studentNum;i++)
+		{
+			tmp+=String.format("%-20s%-20s%-20s%-20s\n",students[i].id,students[i].name,students[i].sex,students[i].num);
+			
+			
+		}
+		a.setText(tmp);
+		
+	}
+	//检查输入的学生信息是不是合法
+	public boolean checkStudent(Student a)
+	{
+		boolean flag1=false,flag2=true;
+		//检查当前的学生的宿舍号是否输入正确
+		for(int i=0;i<roomNum;i++)
+		{
+			if(a.num==rooms[i].num)
+				{
+				flag1=true;
+				}
+		}
+		if(a.num==-1)
+			 flag1=true;
+		
+		//检查当前的学生的学号是否正确
+		for(int i=0;i<studentNum;i++)
+		{
+			if(a.id.equals(students[i].id))
+				flag2=false;
+		}
+		
+		return flag1&&flag2;
+	}
+	//将宿舍们排个序,没住满的优先放在前面，住满了的放最后,剩的空位少的宿舍在剩的空位多的宿舍的前面
+	public void sortRooms(Room [] tmp)
+	{
+		for(int i=0;i<roomNum-1;i++)
+		{
+			for(int j=0;j<roomNum-1-i;j++)
+			{
+				if(!tmp[i].cmp(tmp[j]))///////////////////////////////////////////////equals
+				{
+					Room ro;
+					ro=tmp[i];
+					tmp[i]=tmp[j];
+					tmp[j]=ro;
+				}
+			}
+		}
+	}
+	
+	//查找还没有入住的学生的信息
+	public void findnew()
+	{
+		newStudentNum=0;
+		for(int i=0;i<studentNum;i++)
+		{
+			//如果学生还没有入住,则他的num值设置为-1
+			if(students[i].num==-1)
+			{
+				newStudents[newStudentNum++]=students[i];
+			}
+		}
+		
+	
+	}
+	
+	//检查该学生是否是新学生,如果是的话返回对象,不是的话返回null
+	public Student checknew(String newstu)
+	{
+		Student newStudent=null;
+
+		for(int i=0;i<newStudentNum;i++)
+		{
+			if(newstu.equals(newStudents[i].id))
+			{
+				newStudent=newStudents[i];
+			}
+		}
+		
+		return newStudent;
+	}
+	
+	//为学生a分配宿舍,如果分配成功那么返回true,分配失败返回false;分配的信息存放在	newStu,newStuRooms中
+	//如果分配成功那么返回true,分配失败返回false
+	public boolean findroom(Student a,Room [] r)
+	{
+		sortRooms(r);
+		boolean flag=false;
+		for(int i=0;i<roomNum;i++)
+		{
+			if(a.sex.equals(r[i].sex)&&(r[i].size-r[i].has>0))
+			{
+				r[i].has++;
+				r[i].Insert(a);	
+				newStu[newStuRoomNum]=a;
+				newStuRooms[newStuRoomNum++]=r[i];		
+				flag=true;
+				break;
+			}
+		}
+		return flag;
+	}
+	
+	//显示所有的新同学得名字和所住宿舍的信息
+	//显示当前拟定的分配方案
+	public void showNewRooms(JTextArea a)
+	{
+		String text="";
+		
+		for(int i=0;i<newStuRoomNum;i++)
+		{
+			text+=String.format("name:%s   id: %s    -->  room %s\n",newStu[i].name,newStu[i].id,newStuRooms[i].num);
+		}
+		a.setText(text);
+	}
+	
+	//根据宿舍号num返回该宿舍在rooms数组里面的下标位置
+	public int getRoom(int num)
+	{	int posRoom=-1;
+		for(int i=0;i<roomNum;i++)
+		{
+			if(num==rooms[i].num)
+			{
+				posRoom=i;
+				break;
+			}
+		}
+		return posRoom;
+	}
+	
+	//根据学生学号id找到该学生在students数组里面的下标位置
+	public int getStu(String id)
+	{
+		int posStu=-1;
+		for(int i=0;i<studentNum;i++)
+		{
+			if(id.equals(students[i].id))
+			{
+				posStu=i;
+				break;
+			}
+		}
+		return posStu;
+	}
+	
+	//将学生a分配到宿舍b中
+	public void assign(Student a,Room b)
+	{
+		int posStu=0,posRoom=0;
+		//根据学生A的id取得学生A在students数组中的下标位置
+		posStu=getStu(a.id);
+		//根据房间B的宿舍号,取得房间B在rooms数组中的下标位置
+		posRoom=getRoom(b.num);
+		//判断宿舍还有没有空位置
+		if(b.size-b.has<=0)
+		{
+			JOptionPane.showMessageDialog(null,"该宿舍已经住满了","ERROR",JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		if(!b.sex.equals(a.sex))
+		{
+			JOptionPane.showMessageDialog(null,"该宿舍和该学生的性别不一致","ERROR",JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		//判断学生A是否没有入住任何的寝室
+		if(students[posStu].num==-1)
+		{
+			//如果没有入住,那么现在直接入住
+			students[posStu].num=b.num;
+		}
+		else
+		{
+			//如果入住了寝室,那么先获得原来的寝室
+			int posOld=getRoom(students[posStu].num);
+			//将原来的寝室进行修改
+			//已经住的人数减少一个,同时删除该宿舍中的该学生的信息
+			rooms[posOld].has--;
+			rooms[posOld].stu.remove(a);
+			//入住新宿舍
+			students[posStu].num=b.num;
+		}
+		//新宿舍已入住人数增加一个,
+		//同时将该学生信息增加到新宿舍中去
+		rooms[posRoom].has++;
+		rooms[posRoom].stu.add(a);
+		
+	}
+	
+	
+	//学生毕业退宿：删除学生信息，修改其所住宿舍信息。
+	public void remove(Student a)
+	{
+		//判断学生是否已经住进了寝室
+		if(a.num!=-1)
+		{
+			//修改其所住宿舍信息
+			int posRoom=getRoom(a.num);
+			rooms[posRoom].has--;
+			rooms[posRoom].stu.remove(a);
+		}
+		int posStu=getStu(a.id);
+		//删除学生信息，
+		for(int i=posStu+1;i<studentNum;i++)
+		{
+			students[i-1]=students[i];
+		}
+		studentNum--;
+		
+	}
+	//判断是否students数组中是否有这个id
+	boolean checkId(String id)
+	{
+		for(int i=0;i<studentNum;i++)
+		{
+			if(students[i].id.equals(id))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+//	显示学生信息
+	public String showStu(Student a)
+	{
+		String tmp="";
+		tmp+=String.format("id:%s   name:%s   sex:%s  num:%s\n",a.id,a.name,a.sex,a.num);
+		//JOptionPane.showMessageDialog(null,"tmp:"+object.id+"   "+object.name+"\n","ERROR",JOptionPane.INFORMATION_MESSAGE);
+		return tmp;
+	}
+	//输入宿舍号 ,显示宿舍里面住着的人的信息
+	public String showNowRoom(int num)
+	{
+		
+		String text="";	
+		for(int i=0;i<studentNum;i++)
+		{
+			if(num==students[i].num)
+			{
+				text+=showStu(students[i]);
+				//JOptionPane.showMessageDialog(null,"  text"+text,"ERROR",JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+		return text;
+	}
+	//第一个标签页面Input
+	public  void theone(JPanel panel_1 ){
+		panel_1.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("addRoom");
+		lblNewLabel.setBounds(35, 276, 103, 15);
+		panel_1.add(lblNewLabel);
+		
+		//输入num值
+		JLabel lblNum = new JLabel("num");
+		lblNum.setBounds(84, 313, 54, 15);
+		panel_1.add(lblNum);
+		textField = new JTextField();
+		textField.setBounds(71, 338, 54, 21);
+		panel_1.add(textField);
+		textField.setColumns(10);
+		
+		//输入size值
+		JLabel lblSize = new JLabel("size");
+		lblSize.setBounds(148, 313, 54, 15);
+		panel_1.add(lblSize);
+		textField_1 = new JTextField();
+		textField_1.setBounds(148, 338, 54, 21);
+		panel_1.add(textField_1);
+		textField_1.setColumns(10);
+		
+		//输入has值
+		JLabel lblHas_1 = new JLabel("has");
+		lblHas_1.setBounds(212, 313, 54, 15);
+		panel_1.add(lblHas_1);
+		textField_4 = new JTextField();
+		textField_4.setBounds(212, 338, 54, 21);
+		panel_1.add(textField_4);
+		textField_4.setColumns(10);
+		
+		//输入sex值
+		JLabel lblSex = new JLabel("sex");
+		lblSex.setBounds(276, 313, 54, 15);
+		panel_1.add(lblSex);
+		textField_2 = new JTextField();
+		textField_2.setBounds(276, 338, 54, 21);
+		panel_1.add(textField_2);
+		textField_2.setColumns(10);
+		
+		
+		
+		JLabel lblRooms = new JLabel("Rooms:");
+		lblRooms.setBounds(35, 29, 91, 15);
+		panel_1.add(lblRooms);
+		//在文本框中显示出rooms的各项信息
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(71, 80, 265, 170);
+		panel_1.add(textArea);
+		showRooms(textArea);
+		//添加提示标签
+		JLabel lblNum_1 = new JLabel("num");
+		lblNum_1.setBounds(71, 54, 54, 15);
+		panel_1.add(lblNum_1);
+		//添加提示标签
+		JLabel lblSize_1 = new JLabel("size");
+		lblSize_1.setBounds(124, 55, 54, 15);
+		panel_1.add(lblSize_1);
+		//添加提示标签
+		JLabel lblHas = new JLabel("has");
+		lblHas.setBounds(188, 54, 54, 15);
+		panel_1.add(lblHas);
+		//添加提示标签
+		JLabel lblSex_1 = new JLabel("sex");
+		lblSex_1.setBounds(252, 55, 54, 15);
+		panel_1.add(lblSex_1);
+		
+		//添加提示标签
+		JLabel lblStudents = new JLabel("Students:");
+		lblStudents.setBounds(345, 29, 54, 15);
+		panel_1.add(lblStudents);
+		//添加提示标签
+		JLabel lblId = new JLabel("id");
+		lblId.setBounds(375, 54, 54, 15);
+		panel_1.add(lblId);
+		//添加提示标签
+		JLabel lblName = new JLabel("name");
+		lblName.setBounds(449, 54, 54, 15);
+		panel_1.add(lblName);
+		//添加提示标签
+		JLabel lblSex_2 = new JLabel("sex");
+		lblSex_2.setBounds(527, 54, 54, 15);
+		panel_1.add(lblSex_2);
+		//添加提示标签
+		JLabel lblNum_2 = new JLabel("num");
+		lblNum_2.setBounds(604, 54, 54, 15);
+		panel_1.add(lblNum_2);
+		//显示students的各项信息
+		JTextArea textArea_1 = new JTextArea();
+		textArea_1.setBounds(375, 80, 298, 170);
+		showStudents(textArea_1); 
+		panel_1.add(textArea_1);
+		
+		
+		JLabel lblAddstudent = new JLabel("addStudent");
+		lblAddstudent.setBounds(375, 276, 118, 15);
+		panel_1.add(lblAddstudent);
+		//输入id
+		JLabel lblNum_3 = new JLabel("id");
+		lblNum_3.setBounds(375, 313, 54, 15);
+		panel_1.add(lblNum_3);
+		textField_5 = new JTextField();
+		textField_5.setBounds(371, 338, 93, 21);
+		panel_1.add(textField_5);
+		textField_5.setColumns(10);
+		
+		//输入name
+		JLabel lblName_1 = new JLabel("name");
+		lblName_1.setBounds(483, 313, 54, 15);
+		panel_1.add(lblName_1);
+		textField_6 = new JTextField();
+		textField_6.setBounds(483, 338, 54, 21);
+		panel_1.add(textField_6);
+		textField_6.setColumns(10);
+		
+		//输入sex
+		JLabel lblSex_3 = new JLabel("sex");
+		lblSex_3.setBounds(547, 313, 54, 15);
+		panel_1.add(lblSex_3);
+		textField_7 = new JTextField();
+		textField_7.setBounds(547, 338, 54, 21);
+		panel_1.add(textField_7);
+		textField_7.setColumns(10);
+		
+		//输入num
+		JLabel lblNum_4 = new JLabel("num");
+		lblNum_4.setBounds(619, 313, 54, 15);
+		panel_1.add(lblNum_4);
+		textField_8 = new JTextField();
+		textField_8.setBounds(619, 338, 54, 21);
+		panel_1.add(textField_8);
+		textField_8.setColumns(10);
+		
+		 //提交新同学
+		JButton btnSubmitnewstudent = new JButton("SubmitNewStudent");
+		btnSubmitnewstudent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String id,name,sex;
+				int num;
+				id=textField_5.getText();
+				name=textField_6.getText();
+				sex=textField_7.getText();
+				num=Integer.parseInt(textField_8.getText());
+				if(!checkStudent(new Student(id,name,sex,num)))
+				{
+					JOptionPane.showMessageDialog(null,"学生信息输入错误","ERROR",JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				students[studentNum++]=new Student(id,name,sex,num);
+				showStudents(textArea_1); 
+				save();
+			}
+		});
+		btnSubmitnewstudent.setBounds(399, 404, 155, 23);
+		panel_1.add(btnSubmitnewstudent);
+		
+		
+		//提交新宿舍
+		JButton btnSubmit = new JButton("SubmitNewRoom");
+		btnSubmit.setBounds(84, 404, 145, 23);
+		panel_1.add(btnSubmit);
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				int numm=Integer.parseInt(textField.getText());
+				int sizee=Integer.parseInt(textField_1.getText());
+				int has=Integer.parseInt(textField_4.getText());
+				String sexx=textField_2.getText();
+				 rooms[roomNum++]=new Room(numm,sizee,has,sexx);
+				 showRooms(textArea);
+				 save();
+			}
+		});
+		
+		JButton btnRefresh_1 = new JButton("Refresh");
+		btnRefresh_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				 showRooms(textArea);
+				 showStudents(textArea_1); 
+				 
+				 
+			}
+		});
+		btnRefresh_1.setBounds(591, 429, 93, 23);
+		panel_1.add(btnRefresh_1);
+	}
+	
+	
+	//第二个标签页面distribute
+	public void thetwo(JPanel panel_2)
+	{
+		panel_2.setLayout(null);
+		
+		//显示提示标签
+		JLabel lblStudents_1 = new JLabel("Students:");
+		lblStudents_1.setBounds(29, 10, 54, 15);
+		panel_2.add(lblStudents_1);
+		
+		//显示student的各项信息
+		JTextArea textArea_1 = new JTextArea();
+		textArea_1.setBounds(29, 69, 277, 363);
+		panel_2.add(textArea_1);
+		showStudents(textArea_1);
+		
+		//显示提示标签
+		JLabel lblId_1 = new JLabel("id");
+		lblId_1.setBounds(29, 44, 54, 15);
+		panel_2.add(lblId_1);
+		
+		//显示提示标签
+		JLabel lblName_2 = new JLabel("name");
+		lblName_2.setBounds(93, 44, 54, 15);
+		panel_2.add(lblName_2);
+		
+		//显示提示标签
+		JLabel lblSex_4 = new JLabel("sex");
+		lblSex_4.setBounds(157, 44, 54, 15);
+		panel_2.add(lblSex_4);
+		
+		//显示提示标签
+		JLabel lblNum_5 = new JLabel("num");
+		lblNum_5.setBounds(217, 44, 54, 15);
+		panel_2.add(lblNum_5);
+		
+		//输入学生的id
+		JLabel lblId_2 = new JLabel("id");
+		lblId_2.setBounds(329, 10, 54, 15);
+		panel_2.add(lblId_2);
+		textField_9 = new JTextField();
+		textField_9.setBounds(329, 38, 100, 21);
+		panel_2.add(textField_9);
+		textField_9.setColumns(10);
+		
+		
+		//显示推荐信息的标签	
+		JLabel lblWeRecommond = new JLabel("We recommond...");
+		lblWeRecommond.setBounds(343, 120, 229, 21);
+		panel_2.add(lblWeRecommond);
+		//显示推荐信息
+		JTextArea textArea_2 = new JTextArea();
+		textArea_2.setBounds(343, 145, 329, 228);
+		panel_2.add(textArea_2);
+		
+		//添加将单个学生分配宿舍的按钮
+		JButton btnNewButton = new JButton("To a new room");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Room []tmp=new Room[roomNum+1];
+				for(int i=0;i<roomNum;i++)
+					{
+					tmp[i]=new Room();
+					tmp[i].copy(rooms[i]);
+					}
+				
+				newStuRoomNum=0;
+				sortRooms(tmp);
+				findnew();
+				String newstu=textField_9.getText();
+				Student newStudent=checknew(newstu);
+				if(newStudent==null)
+				{
+					JOptionPane.showMessageDialog(null,"输入学生学号错误","ERROR",JOptionPane.INFORMATION_MESSAGE);
+				 	return;
+				}
+			
+				if(!findroom(newStudent,tmp))
+				{
+					JOptionPane.showMessageDialog(null,"宿舍已经满了,无法分配新宿舍","ERROR",JOptionPane.INFORMATION_MESSAGE);
+				 	return ;
+				}
+				
+				showNewRooms(textArea_2);
+				
+				
+			}
+		});
+		btnNewButton.setBounds(439, 40, 229, 23);
+		panel_2.add(btnNewButton);
+		
+		//批量分配
+		JButton btnGroupsToNew = new JButton("Groups to new rooms");
+		btnGroupsToNew.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Room []tmp=new Room[roomNum+1];
+				for(int i=0;i<roomNum;i++)
+					{
+					tmp[i]=new Room();
+					tmp[i].copy(rooms[i]);
+					}
+				newStuRoomNum=0;
+				
+				sortRooms(tmp);	
+				findnew();
+				//newStudents[newStudentNum++]
+				//JOptionPane.showMessageDialog(null,"newStudentNum"+newStudentNum,"ERROR",JOptionPane.INFORMATION_MESSAGE);
+				for(int i=0;i<newStudentNum;i++)
+				{
+					
+					if(!findroom(newStudents[i],tmp))
+					{
+						JOptionPane.showMessageDialog(null,"为"+newStudents[i].name+"分配宿舍时失败","ERROR",JOptionPane.INFORMATION_MESSAGE);
+					 	continue;
+					}
+					else
+						JOptionPane.showMessageDialog(null,newStudents[i].name+"has been setted!","OK",JOptionPane.INFORMATION_MESSAGE);
+					
+					
+				}
+				
+				showNewRooms(textArea_2);
+			}
+		});
+		btnGroupsToNew.setBounds(439, 83, 229, 23);
+		panel_2.add(btnGroupsToNew);
+		
+	
+		//将拟定的方案保存
+		JButton btnOk = new JButton("OK");
+		btnOk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for(int i=0;i<newStuRoomNum;i++)
+				{
+					assign(newStu[i],newStuRooms[i]);
+				}
+				showStudents(textArea_1);
+				String tmp="";
+				textArea_2.setText(tmp);
+				save();
+			}
+		});
+		btnOk.setBounds(346, 409, 93, 23);
+		panel_2.add(btnOk);
+		
+		//刷新
+		JButton btnRefresh = new JButton("Refresh");
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				showStudents(textArea_1);
+				String tmp="";
+				textArea_2.setText(tmp);
+			
+				
+			}
+			
+		});
+		btnRefresh.setBounds(509, 409, 93, 23);
+		panel_2.add(btnRefresh);
+		
+	}
+
+	
+	//创建第三个分页面板exchange&&check out
+	public void thethree(JPanel panel_3)
+	{
+		panel_3.setLayout(null);
+		
+		//显示room的信息
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(50, 58, 277, 278);
+		panel_3.add(textArea);
+		//显示提示标签
+		JLabel lblStudents_2 = new JLabel("Rooms");
+		lblStudents_2.setBounds(10, 10, 54, 15);
+		panel_3.add(lblStudents_2);
+		//显示提示标签
+		JLabel lblNum_6 = new JLabel("num");
+		lblNum_6.setBounds(50, 33, 54, 15);
+		panel_3.add(lblNum_6);
+		//显示提示标签
+		JLabel lblSize_2 = new JLabel("size");
+		lblSize_2.setBounds(92, 33, 54, 15);
+		panel_3.add(lblSize_2);
+		//显示提示标签
+		JLabel lblHas_2 = new JLabel("has");
+		lblHas_2.setBounds(143, 33, 54, 15);
+		panel_3.add(lblHas_2);
+		//显示提示标签
+		JLabel lblSex_5 = new JLabel("sex");
+		lblSex_5.setBounds(200, 33, 54, 15);
+		panel_3.add(lblSex_5);
+		//显示提示标签
+		JLabel lblStudents_3 = new JLabel("Students");
+		lblStudents_3.setBounds(308, 10, 54, 15);
+		panel_3.add(lblStudents_3);
+		//显示提示标签
+		JLabel lblId_3 = new JLabel("id");
+		lblId_3.setBounds(357, 33, 54, 15);
+		panel_3.add(lblId_3);
+		//显示学生信息
+		JTextArea textArea_1 = new JTextArea();
+		textArea_1.setBounds(357, 61, 315, 278);
+		panel_3.add(textArea_1);
+		//显示提示标签
+		JLabel lblName_3 = new JLabel("name");
+		lblName_3.setBounds(406, 33, 54, 15);
+		panel_3.add(lblName_3);
+		//显示提示标签
+		JLabel lblSex_6 = new JLabel("sex");
+		lblSex_6.setBounds(464, 33, 54, 15);
+		panel_3.add(lblSex_6);
+		//显示提示标签
+		JLabel lblNum_7 = new JLabel("num");
+		lblNum_7.setBounds(528, 33, 54, 15);
+		panel_3.add(lblNum_7);
+		//显示提示标签
+		JLabel lblA = new JLabel("studentA(id)");
+		lblA.setBounds(52, 346, 94, 15);
+		panel_3.add(lblA);
+		//读取学生A的id
+		textField_10 = new JTextField();
+		textField_10.setBounds(52, 372, 94, 21);
+		panel_3.add(textField_10);
+		textField_10.setColumns(10);
+		//显示提示标签
+		JLabel lblStudentb = new JLabel("studentB(id)");
+		lblStudentb.setBounds(158, 346, 96, 15);
+		panel_3.add(lblStudentb);
+		//读取学生B的id
+		textField_11 = new JTextField();
+		textField_11.setBounds(158, 372, 96, 21);
+		panel_3.add(textField_11);
+		textField_11.setColumns(10);
+		//显示宿舍和学生的信息
+		showRooms(textArea);
+		showStudents(textArea_1);
+		//将学生A与B互换
+		JButton btnAb = new JButton("A<-->B");
+		btnAb.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String aid,bid;
+				//取得学生A的id
+				aid=textField_10.getText();
+				//取得学生B的id
+				bid=textField_11.getText();
+				//取得学生A的信息
+				Student stuA=students[getStu(aid)];
+				//取得学生B的信息
+				Student stuB=students[getStu(bid)];
+				//判断输入的学号是否正确
+				if(!checkId(aid)||!checkId(bid))
+				{
+					JOptionPane.showMessageDialog(null,"学生的学号输入错误","ERROR",JOptionPane.INFORMATION_MESSAGE);
+					return ;
+				}
+				//判断学生A与学生B的性别是否相同
+				if(!stuA.sex.equals(stuB.sex))
+				{
+					JOptionPane.showMessageDialog(null,"学生的性别不同,不能够调换寝室","ERROR",JOptionPane.INFORMATION_MESSAGE);
+				 	return;
+				}
+				//取得学生A现在所住的房间
+				Room roomA=rooms[getRoom(stuA.num)];
+				//取得学生B现在所住的房间
+				Room roomB=rooms[getRoom(stuB.num)];
+				//将学生A分配到房间B中去
+				assign(stuA,roomB);
+				//将学生B分配到房间A中去
+				assign(stuB,roomA);
+				//显示房间信息和学生信息
+				showRooms(textArea);
+				showStudents(textArea_1);
+				//保存学生信息和房间信息
+				save();
+			}
+		});
+		btnAb.setBounds(259, 371, 75, 23);
+		panel_3.add(btnAb);
+		//显示提示标签
+		JLabel lblStudentaid = new JLabel("studentA(id)");
+		lblStudentaid.setBounds(52, 403, 94, 15);
+		panel_3.add(lblStudentaid);
+		//输入学生A的id
+		textField_12 = new JTextField();
+		textField_12.setBounds(52, 428, 94, 21);
+		panel_3.add(textField_12);
+		textField_12.setColumns(10);
+		//显示提示标签
+		JLabel lblStudentbid = new JLabel("roomB(num)");
+		lblStudentbid.setBounds(158, 403, 96, 15);
+		panel_3.add(lblStudentbid);
+		//输入宿舍B的num
+		textField_13 = new JTextField();
+		textField_13.setBounds(158, 428, 96, 21);
+		panel_3.add(textField_13);
+		textField_13.setColumns(10);
+		//将学生A分配到宿舍B中去
+		JButton btnAb_1 = new JButton("A--->B");
+		btnAb_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//取得学生A的信息
+				Student stuA=students[getStu(textField_12.getText())];
+				//取得房间B的信息
+				Room roomB=rooms[getRoom(Integer.parseInt(textField_13.getText()))];
+				//将学生A分配到房间B中去
+				assign(stuA,roomB);
+				//显示房间信息
+				showRooms(textArea);
+				//显示学生信息
+				showStudents(textArea_1);
+				//保存信息
+				save();
+			}
+		});
+		btnAb_1.setBounds(261, 427, 75, 23);
+		panel_3.add(btnAb_1);
+		//显示提示标签
+		JLabel lblStudenta = new JLabel("studentA");
+		lblStudenta.setBounds(367, 347, 54, 15);
+		panel_3.add(lblStudenta);
+		//得到学生id
+		textField_14 = new JTextField();
+		textField_14.setBounds(357, 372, 103, 21);
+		panel_3.add(textField_14);
+		textField_14.setColumns(10);
+		//学生退舍
+		JButton btnLeave = new JButton("leave");
+		btnLeave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//根据学生的学号,取得该学生在students数组中的下标位置
+				int posStu=getStu(textField_14.getText());
+				//判断是否找到了该学生的信息
+				if(posStu==-1)
+				{
+					JOptionPane.showMessageDialog(null,"学号输入错误","ERROR",JOptionPane.INFORMATION_MESSAGE);
+				 	return;
+				}
+				//取得该学生的信息
+				Student stuA=students[posStu];
+				//删除掉该学生
+				remove(stuA);
+				//显示房间信息
+				showRooms(textArea);
+				//显示学生信息
+				showStudents(textArea_1);
+				//保存
+				save();
+			}
+		});
+		btnLeave.setBounds(481, 371, 82, 23);
+		panel_3.add(btnLeave);
+		
+		//刷新
+		JButton btnRefresh_2 = new JButton("Refresh");
+		btnRefresh_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				 showRooms(textArea);
+				 showStudents(textArea_1); 
+				 String tmp="";
+				 textField_10.setText(tmp);
+				 textField_11.setText(tmp);
+				 textField_12.setText(tmp);
+				 textField_13.setText(tmp);
+				 textField_14.setText(tmp);
+
+			}
+		});
+		btnRefresh_2.setBounds(481, 427, 82, 23);
+		panel_3.add(btnRefresh_2);
+	
+	}
+
+	//构建第四个分页inquire
+	public void thefour(JPanel panel_4)
+	{
+		panel_4.setLayout(null);
+		//显示提示标签
+		JLabel lblNewLabel_1 = new JLabel("rooms");
+		lblNewLabel_1.setBounds(20, 26, 54, 15);
+		panel_4.add(lblNewLabel_1);
+		//显示房间信息
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(72, 51, 259, 200);
+		panel_4.add(textArea);
+		//显示提示标签
+		JLabel lblNewLabel_2 = new JLabel("num");
+		lblNewLabel_2.setBounds(72, 35, 54, 15);
+		panel_4.add(lblNewLabel_2);
+		//显示提示标签
+		JLabel lblSize_3 = new JLabel("size");
+		lblSize_3.setBounds(134, 35, 54, 15);
+		panel_4.add(lblSize_3);
+		//显示提示标签
+		JLabel lblSex_7 = new JLabel("has");
+		lblSex_7.setBounds(198, 35, 54, 15);
+		panel_4.add(lblSex_7);
+		//显示提示标签
+		JLabel lblSex_8 = new JLabel("sex");
+		lblSex_8.setBounds(262, 35, 54, 15);
+		panel_4.add(lblSex_8);
+		
+		//显示提示标签
+		JLabel lblStudents_4 = new JLabel("students");
+		lblStudents_4.setBounds(333, 10, 54, 15);
+		panel_4.add(lblStudents_4);
+		//显示学生信息
+		JTextArea textArea_1 = new JTextArea();
+		textArea_1.setBounds(383, 51, 306, 200);
+		panel_4.add(textArea_1);
+		//显示提示标签
+		JLabel lblId_4 = new JLabel("id");
+		lblId_4.setBounds(383, 35, 54, 15);
+		panel_4.add(lblId_4);
+		//显示提示标签
+		JLabel lblName_4 = new JLabel("name");
+		lblName_4.setBounds(447, 35, 54, 15);
+		panel_4.add(lblName_4);
+		//显示提示标签
+		JLabel lblSex_9 = new JLabel("sex");
+		lblSex_9.setBounds(511, 35, 54, 15);
+		panel_4.add(lblSex_9);
+		//显示提示标签
+		JLabel lblNum_8 = new JLabel("num");
+		lblNum_8.setBounds(573, 35, 54, 15);
+		panel_4.add(lblNum_8);
+		//显示提示标签
+		JLabel lblResult = new JLabel("result");
+		lblResult.setBounds(333, 263, 54, 15);
+		panel_4.add(lblResult);
+		//显示各项结果
+		JTextArea textArea_2 = new JTextArea();
+		textArea_2.setBounds(383, 288, 271, 164);
+		panel_4.add(textArea_2);
+		//显示学生和宿舍信息
+		showRooms(textArea);
+		showStudents(textArea_1);
+		//根据id查找
+		JButton btnAccordingToId = new JButton("According to id");
+		btnAccordingToId.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String id=textField_15.getText();
+				Student now=students[getStu(id)];
+				String text="";
+				//判断学生是否入住,
+				//如果入住就输出该宿舍里面所有学生的信息,否则就只输出该学生的信息
+				if(now.num!=-1)
+					text+=showNowRoom(now.num);
+				else
+					text+=showStu(now);
+				//显示学生的信息
+				textArea_2.setText(text);
+				//保存学生的信息
+				save();
+			}
+		});
+		
+		btnAccordingToId.setBounds(163, 288, 168, 23);
+		panel_4.add(btnAccordingToId);
+		
+		//根据名字查找
+		JButton btnAccordingToName = new JButton("According to name");
+		btnAccordingToName.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String name=textField_16.getText();
+				String text="";
+				for(int i=0;i<studentNum;i++)
+				{
+					if(name.equals(students[i].name))
+					{
+						int num=students[i].num;
+						//判断学生是否入住,
+						//如果入住就输出该宿舍里面所有学生的信息,否则就只输出该学生的信息
+
+						if(num!=-1)
+						text+=showNowRoom(num);
+						else
+						text+=showStu(students[i]);
+					}
+				}
+				//显示学生的信息
+				textArea_2.setText(text);
+				//保存学生的信息
+				save();
+				
+			}
+		});
+		btnAccordingToName.setBounds(163, 349, 168, 23);
+		panel_4.add(btnAccordingToName);
+		
+		//根据宿舍号码查找
+		JButton btnAccordingToNum = new JButton("According to num");
+		btnAccordingToNum.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//取得学生的宿舍号码
+				int num=Integer.parseInt(textField_17.getText());
+				String text="";
+				//取得住在该宿舍里面的学生的信息
+				text+=showNowRoom(num);
+				//显示学生的信息
+				textArea_2.setText(text);
+				//保存学生的信息
+				save();
+			}
+		});
+		btnAccordingToNum.setBounds(163, 407, 168, 23);
+		panel_4.add(btnAccordingToNum);
+		
+		textField_15 = new JTextField();
+		textField_15.setBounds(72, 289, 66, 21);
+		panel_4.add(textField_15);
+		textField_15.setColumns(10);
+		
+		textField_16 = new JTextField();
+		textField_16.setBounds(72, 350, 66, 21);
+		panel_4.add(textField_16);
+		textField_16.setColumns(10);
+		
+		textField_17 = new JTextField();
+		textField_17.setBounds(72, 408, 66, 21);
+		panel_4.add(textField_17);
+		textField_17.setColumns(10);
+		//输入id
+		JLabel lblId_5 = new JLabel("id");
+		lblId_5.setBounds(20, 292, 54, 15);
+		panel_4.add(lblId_5);
+		//输入名字
+		JLabel lblName_5 = new JLabel("name");
+		lblName_5.setBounds(20, 353, 54, 15);
+		panel_4.add(lblName_5);
+		//输入宿舍号
+		JLabel lblNum_9 = new JLabel("num");
+		lblNum_9.setBounds(20, 411, 54, 15);
+		panel_4.add(lblNum_9);
+		//刷新
+		JButton btnRefresh_3 = new JButton("Refresh");
+		btnRefresh_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				 showRooms(textArea);
+				 showStudents(textArea_1); 
+				 String tmp="";
+				 textArea_2.setText(tmp);
+			}
+		});
+		btnRefresh_3.setBounds(561, 259, 93, 23);
+		panel_4.add(btnRefresh_3);
+	
+	}
+	
+public theHomework() {
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 750, 550);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(20, 10, 704, 491);
+		contentPane.add(tabbedPane);
+		
+		//第一个分页
+		JPanel panel_1 = new JPanel();
+		tabbedPane.addTab("Input", null, panel_1, null);
+		theone(panel_1);
+		
+		//第二个分页
+		JPanel panel_2 = new JPanel();
+		tabbedPane.addTab("Distribute", null, panel_2, null);
+		thetwo(panel_2);
+	
+		//第三个分页
+		JPanel panel_3 = new JPanel();
+		tabbedPane.addTab("Exchange &&check out", null, panel_3, null);
+		thethree(panel_3);
+		
+		//第四个分页
+		JPanel panel_4 = new JPanel();
+		tabbedPane.addTab("Inquire", null, panel_4, null);
+		thefour(panel_4);		
+	}
+}
